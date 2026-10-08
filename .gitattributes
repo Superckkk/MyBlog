@@ -1,0 +1,17 @@
+# 统一换行符，避免 Windows / macOS / Linux 之间来回改行尾
+* text=auto eol=lf
+
+# 字体、图片按二进制处理，不要做任何行尾或编码转换
+*.woff2 binary
+*.woff  binary
+*.ttf   binary
+*.otf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+
+# GitHub 语言统计里把生成的产物排除掉
+site/   linguist-vendored
