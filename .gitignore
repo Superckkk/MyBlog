@@ -5,6 +5,9 @@ venv/
 # 构建产物
 site/
 
+# 本地验证用的截图
+.preview/
+
 # Python
 __pycache__/
 *.py[cod]

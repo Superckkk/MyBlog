@@ -84,7 +84,12 @@ theme:
 # -----------------------------------------------------------------------------
 nav:
   - 首页: index.md
-  - 博客: blog/index.md
+  # 注意：这里必须写成「有子项的 section」形式，不能写成 `- 博客: blog/index.md`。
+  # blog 插件要求入口页在导航里有父级（blog.parent），否则会把入口标记为
+  # NOT_IN_NAV，归档 / 分类 / 作者就都不会挂到导航上。
+  # 配合 navigation.indexes，blog/index.md 会自动成为这个 section 的落地页。
+  - 博客:
+      - blog/index.md
   - 笔记:
       - notes/index.md
       - Python:
@@ -138,15 +143,18 @@ plugins:
       listings: true
       listings_toc: true
 
-  # 压缩产物。注意：css_files / js_files 不写就等同于没开压缩。
+  # 压缩产物。
+  # 注意：css_files 必须写 extra_css 里那条**一模一样**的路径（不能写 glob）。
+  # 插件在 on_pre_build 时靠精确匹配把 extra_css 改写成 extra.min.css，
+  # 写 glob 的话改名会发生、引用不会改，页面就 404 了。
   - minify:
       minify_html: true
       minify_css: true
       minify_js: true
       css_files:
-        - stylesheets/*.css
+        - stylesheets/extra.css
       # js_files:
-      #   - javascripts/*.js      # 以后自己加了 JS 再打开这行
+      #   - javascripts/extra.js   # 自己加了 JS 之后，同样要写精确路径
 
   # 每页显示创建 / 最后更新日期（读 git 记录，需要仓库有提交历史）
   - git-revision-date-localized:
@@ -171,6 +179,11 @@ plugins:
       json_feed_enabled: false
       length: 20
       pretty_print: true
+      # 频道图标。用浏览器直接打开 feed 时 XSL 会渲染它；不填的话 XSL 会吐出
+      # 一个 <img src="None"> 的 404。必须写绝对地址（插件原样输出，不会补 site_url），
+      # 所以换域名时记得和上面的 site_url 一起改。
+      # RSS 阅读器普遍只认 PNG / JPEG / GIF，别换成 svg。
+      image: https://example.com/assets/images/feed-logo.png
       # 想让 <updated> 用 git 的最后提交时间：
       # as_update 改成 git，并把 use_git 打开
 

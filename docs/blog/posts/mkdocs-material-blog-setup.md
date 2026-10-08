@@ -67,28 +67,70 @@ authors:
 | `glightbox` | 图片点击放大 |
 | `macros` | Markdown 里能用 Jinja2 变量 |
 
-两个容易翻车的点：
+搭的过程中有几个坑是真踩了才明白的，记在这里。
 
-**其一，`minify` 插件光写 `minify_css: true` 是不生效的**，
-必须同时给出 `css_files` / `js_files` 的 glob，否则它一个文件都不处理：
+**其一，`minify` 插件的 `css_files` 必须写精确路径，写 glob 会静默失效。**
+
+它分两步：`on_pre_build` 时把 `extra_css` 里的条目改写成 `xxx.min.css`，
+`on_post_build` 时按 `css_files` 去压缩改名。第一步是**字符串精确匹配**：
 
 ```yaml
-- minify:
-    minify_html: true
-    minify_css: true
-    minify_js: true
-    css_files:
-      - stylesheets/*.css
+extra_css:
+  - stylesheets/extra.css
+plugins:
+  - minify:
+      minify_html: true
+      minify_css: true
+      css_files:
+        - stylesheets/*.css      # ← 错：改名照做，引用不改，页面 404
+        - stylesheets/extra.css  # ← 对：和 extra_css 里一字不差
 ```
 
-**其二，`git-revision-date-localized` 依赖 git 历史。**
-如果目录不是 git 仓库，或者文件还没提交过，构建会报错。
+写成 glob 之后构建不报任何错，`extra.min.css` 也老老实实生成了，
+但 HTML 里还指着 `extra.css`。结果就是自定义样式——包括下面要讲的
+字体 CSS 变量——全部静默不生效，排查起来很费劲。
+
+**其二，`blog` 插件的入口在导航里必须有父级。**
+
+不能这么写：
+
+```yaml
+nav:
+  - 博客: blog/index.md        # ← 错：没有父级的顶层 Page
+```
+
+要写成 section：
+
+```yaml
+nav:
+  - 博客:
+      - blog/index.md          # ← 对：配合 navigation.indexes 当落地页
+```
+
+插件源码里的判断是 `if not self.blog.parent: inclusion = NOT_IN_NAV`。
+入口没有父级的时候，归档、分类、作者三个页面**照样会生成、直接访问也没问题**，
+但一个都不会出现在导航里——特别容易误判成自己写错了配置。
+
+**其三，`git-revision-date-localized` 依赖 git 历史。**
+目录不是 git 仓库，或者文件还没提交过，构建会报错。
 加一个兜底就不会挂：
 
 ```yaml
 - git-revision-date-localized:
     fallback_to_build_date: true
 ```
+
+**其四，`macros` 插件默认会渲染所有页面。**
+技术博客的代码片段里出现 `{{ }}` 太常见了，Jinja、Go template、Vue、Helm
+都会用到，全局开着迟早会把某段代码吃掉。改成按页开关：
+
+```yaml
+- macros:
+    render_by_default: false
+```
+
+然后在需要用的页面 front matter 里写 `render_macros: true`。
+本站首页的 RSS 链接就是这么拼出来的。
 
 ## 字体：霞鹜文楷
 
@@ -145,15 +187,25 @@ CSS 里的 `url('./files/...')` 是相对路径，会跟着 CSS 文件自己的�
 
 ### 效果
 
-浏览器只会下载当前页面真正出现过的那几个子集。
-一篇文章通常命中 10 个左右的子集，加起来 300–500 KB，
-比直接上一个几 MB 的完整字体好得多，也比走 CDN 稳。
+浏览器只会下载当前页面真正出现过的那几个子集。实测下来：
+
+| 页面 | 子集数 | 体积 |
+| --- | --- | --- |
+| 首页 | 25 | ≈ 1.3 MB |
+| 文章页（带代码块） | 39 | ≈ 2.0 MB |
+
+子集是一次下载全站复用的，翻第二篇的时候基本命中缓存。
+中文字体站点首次访问 1–2 MB 算正常范围，比直接上一个 4.9 MB
+的完整字体好得多，也比走 CDN 稳。
 
 !!! note "关于字重"
 
     霞鹜文楷本体有 Light 300 / Regular 400 / Bold 700 三档，
     但等宽版只有 Regular。代码块里的粗体是浏览器合成的，
     在 13px 左右基本看不出来，可以接受。
+
+    真嫌 2 MB 大的话，最直接的办法是删掉 `lxgwwenkai-bold.css`，
+    体积差不多腰斩，代价是标题的粗体变成合成效果。
 
 ### 一个细节
 
