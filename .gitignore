@@ -1,0 +1,16 @@
+# 虚拟环境
+.venv/
+venv/
+
+# 构建产物
+site/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# 编辑器 / 系统
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

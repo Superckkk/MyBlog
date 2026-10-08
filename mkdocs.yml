@@ -1,0 +1,268 @@
+# =============================================================================
+#  MkDocs 配置 —— 技术博客脚手架
+#
+#  本地预览： .venv\Scripts\python.exe -m mkdocs serve
+#  构建产物： .venv\Scripts\python.exe -m mkdocs build
+#
+#  改完本文件后如果预览没有热更新，手动重启一下 serve 即可。
+# =============================================================================
+
+site_name: 我的技术博客
+site_url: https://example.com/
+site_description: 记录工程实践、源码阅读与一些零碎的思考
+site_author: 你的名字
+copyright: Copyright &copy; 2025 你的名字
+
+# 换成你自己的仓库后，右上角的编辑按钮就能用了
+repo_url: https://github.com/your-name/your-blog
+repo_name: your-name/your-blog
+edit_uri: edit/main/docs/
+
+
+# -----------------------------------------------------------------------------
+# 主题
+# -----------------------------------------------------------------------------
+theme:
+  name: material
+  language: zh
+
+  # 关键：关掉主题自带的 Google Fonts 请求，
+  # 字体改用自托管的霞鹜文楷，CSS 变量在 docs/stylesheets/extra.css 里定义。
+  font: false
+
+  logo: assets/images/logo.svg
+  favicon: assets/images/favicon.svg
+
+  icon:
+    repo: fontawesome/brands/github
+
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: 切换到深色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: 切换到浅色模式
+
+  features:
+    - navigation.instant            # 单页应用式跳转
+    - navigation.instant.progress   # 顶部加载进度条
+    - navigation.tracking           # 地址栏跟随滚动更新锚点
+    - navigation.tabs               # 一级导航做成顶栏
+    - navigation.tabs.sticky        # 顶栏吸顶
+    - navigation.sections           # 侧栏分组展开
+    - navigation.indexes            # index.md 作为分组的落地页
+    - navigation.top                # 回到顶部
+    - navigation.footer             # 上一页 / 下一页
+    - navigation.path               # 面包屑
+    - toc.follow                    # 右侧目录跟随滚动
+    - search.suggest                # 搜索联想
+    - search.highlight              # 搜索结果高亮
+    - search.share                  # 搜索结果分享链接
+    - content.code.copy             # 代码块复制按钮
+    - content.code.select           # 代码块按行选中
+    - content.code.annotate         # 代码块行内标注
+    - content.tabs.link             # 跨页同步内容标签页
+    - content.tooltips              # 链接与脚注悬浮预览
+    - content.action.edit           # 编辑此页
+    - content.action.view           # 查看源码
+
+
+# -----------------------------------------------------------------------------
+# 导航
+#
+# 博客相关的「归档 / 分类 / 作者」页面由 blog 插件自动挂到「博客」下面，
+# 不用在这里手写。
+# -----------------------------------------------------------------------------
+nav:
+  - 首页: index.md
+  - 博客: blog/index.md
+  - 笔记:
+      - notes/index.md
+      - Python:
+          - notes/python/index.md
+          - 常用 pathlib 片段: notes/python/pathlib-recipes.md
+      - 工具链:
+          - notes/tooling/index.md
+          - 我的 Git 别名: notes/tooling/git-aliases.md
+  - 标签: tags.md
+  - 关于: about.md
+
+
+# -----------------------------------------------------------------------------
+# 插件
+# -----------------------------------------------------------------------------
+plugins:
+  # 站内搜索。中文分词依赖 jieba（见 requirements.txt），否则搜中文基本没法用。
+  - search:
+      lang:
+        - zh
+        - en
+      separator: '[\s\u200b\-]'
+
+  # 博客：文章列表、分页、归档、分类、作者、阅读时长
+  - blog:
+      blog_dir: blog
+      post_dir: "{blog}/posts"
+      post_url_date_format: yyyy/MM/dd
+      post_url_format: "{date}/{slug}"
+      post_excerpt: optional
+      post_excerpt_separator: "<!-- more -->"
+      post_readtime: true
+      post_readtime_words_per_minute: 350   # 中文按字算，比默认的 265 更接近实际
+      archive: true
+      archive_name: 归档
+      archive_date_format: yyyy 年 MMMM
+      archive_url_date_format: yyyy/MM
+      categories: true
+      categories_name: 分类
+      authors: true
+      authors_file: "{blog}/.authors.yml"
+      authors_profiles: true                # 顺便生成作者主页
+      authors_profiles_name: 作者
+      pagination: true
+      pagination_per_page: 8
+      pagination_url_format: "page/{page}"
+
+  # 标签索引。内容由 docs/tags.md 里的 <!-- material/tags --> 指令注入。
+  # 注意：不要再配 tags_file，Material 9.7 起这个选项已废弃。
+  - tags:
+      listings: true
+      listings_toc: true
+
+  # 压缩产物。注意：css_files / js_files 不写就等同于没开压缩。
+  - minify:
+      minify_html: true
+      minify_css: true
+      minify_js: true
+      css_files:
+        - stylesheets/*.css
+      # js_files:
+      #   - javascripts/*.js      # 以后自己加了 JS 再打开这行
+
+  # 每页显示创建 / 最后更新日期（读 git 记录，需要仓库有提交历史）
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: date
+      locale: zh_CN
+      fallback_to_build_date: true
+      enable_git_follow: false
+
+  # RSS / Atom 订阅源，产出在站点根目录：feed_rss_created.xml
+  - rss:
+      match_path: blog/posts/.*
+      date_from_meta:
+        as_creation: date
+        as_update: date
+        datetime_format: "%Y-%m-%d"
+      categories:
+        - categories
+        - tags
+      use_git: false          # 只认 front matter 里的 date，不依赖 git 历史
+      rss_feed_enabled: true
+      json_feed_enabled: false
+      length: 20
+      pretty_print: true
+      # 想让 <updated> 用 git 的最后提交时间：
+      # as_update 改成 git，并把 use_git 打开
+
+  # 图片点击放大
+  - glightbox
+
+  # Markdown 里可以用 Jinja2 变量（比如 {{ config.site_url }}）。
+  # render_by_default 设成 false 是按页开关：只有 front matter 里写了
+  # render_macros: true 的页面才会被渲染。
+  # 技术博客的代码片段里出现 {{ }} 太常见了（Jinja、Go template、Vue、Helm……），
+  # 全局开启迟早会把某段代码吃掉，所以这里默认关掉。
+  - macros:
+      render_by_default: false
+
+
+# -----------------------------------------------------------------------------
+# Markdown 扩展
+# -----------------------------------------------------------------------------
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: "#"
+      title: 本页目录
+
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.keys
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.inlinehilite
+
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+  - pymdownx.tabbed:
+      alternate_style: true
+
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+
+# -----------------------------------------------------------------------------
+# 样式
+# -----------------------------------------------------------------------------
+extra_css:
+  # 霞鹜文楷 Web Font（自托管 woff2 子集，按 unicode-range 按需加载）
+  - assets/fonts/lxgw-wenkai/lxgwwenkai-regular.css
+  - assets/fonts/lxgw-wenkai/lxgwwenkai-bold.css
+  - assets/fonts/lxgw-wenkai/lxgwwenkaimono-regular.css
+  # 站点自定义样式（含字体变量）
+  - stylesheets/extra.css
+
+# extra_javascript:
+#   # 需要数学公式时打开，并同时启用下面的 pymdownx.arithmatex
+#   - javascripts/mathjax.js
+#   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+
+# -----------------------------------------------------------------------------
+# 其它
+# -----------------------------------------------------------------------------
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/your-name
+      name: GitHub
+    - icon: fontawesome/solid/envelope
+      link: mailto:you@example.com
+      name: 邮箱
+    - icon: fontawesome/solid/rss
+      link: /feed_rss_created.xml
+      name: RSS 订阅

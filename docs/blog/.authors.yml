@@ -1,0 +1,14 @@
+# 作者信息
+#
+# 文章 front matter 里写 authors: [your-name] 就会显示下面这些内容。
+# 换成自己的名字、简介和头像即可。
+#
+# 头像用绝对路径（以站点根目录为基准），因为文章页面的 URL 有层级，
+# 相对路径会解析错。
+
+authors:
+  your-name:
+    name: 你的名字
+    description: 后端 & 基础设施
+    avatar: /assets/images/avatar.svg
+    url: https://github.com/your-name
