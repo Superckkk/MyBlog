@@ -50,6 +50,11 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          # 仓库从没开过 Pages 时，让这个 action 用 GITHUB_TOKEN 自动开，
+          # 并把发布来源设成 "GitHub Actions"。
+          # 否则首次运行会直接失败，报 Pages 未启用。
+          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
