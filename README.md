@@ -1,5 +1,7 @@
 # 我的技术博客
 
+> 线上地址：**<https://turingckkk.com/>**
+
 一个用 [MkDocs](https://www.mkdocs.org/) + [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 搭起来的技术笔记站。
 
@@ -314,8 +316,9 @@ extra_javascript:
 
 !!! note "5. `repo_url` 会触发一次 api.github.com 请求"
 
-    Material 用它拉 star / fork 数。仓库地址换成真的之后才有效，
-    占位地址下控制台会有一条 403，不影响任何功能。
+    Material 用它拉 star / fork 数。未登录的请求每个 IP 每小时只有 60 次配额，
+    本地反复刷新页面或者批量脚本打得太密时会看到 403，
+    属于正常现象，不影响站点功能。
 
 !!! note "6. 如果以后要加 `macros` 插件，记得设 `render_by_default: false`"
 
