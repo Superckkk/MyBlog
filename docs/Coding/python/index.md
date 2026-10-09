@@ -1,7 +1,6 @@
 ---
 tags:
   - Python
-  - 笔记
 ---
 
 # Python
