@@ -1,13 +1,8 @@
----
-render_macros: true
----
-
 # 关于
 
 ## 我是谁
 
-一个写后端和基础设施的工程师，平时和 Python、Go、Linux 打交道比较多。
-这里放的是一些工作里绕不开、又值得记下来的东西。
+浙江大学人工智能专业本科生。
 
 ## 关于这个站点
 
@@ -20,16 +15,20 @@ render_macros: true
 | 正文字体 | [霞鹜文楷 LXGW WenKai](https://github.com/lxgw/LxgwWenKai)（自托管 WOFF2 子集） |
 | 等宽字体 | LXGW WenKai Mono |
 | 搜索 | Material 内置搜索 + jieba 中文分词 |
-| 订阅 | mkdocs-rss-plugin |
+| 数学公式 | MathJax 3（CDN） |
+| 讲义阅读 | 浏览器内置 PDF 查看器（`<iframe>` 嵌入） |
 
 字体没有走 Google Fonts，也没有走任何 CDN。`docs/assets/fonts/lxgw-wenkai/`
 下面是一整套按 `unicode-range` 切好的 woff2 子集，浏览器只会拉当前页面用到的那几个。
+
+唯一的外部依赖是数学公式用的 MathJax——自托管一套太占体积，
+如果你更在意离线可用，把 `mkdocs.yml` 里 `extra_javascript` 那两行去掉即可，
+代价是行内公式会显示成原始的 `$...$`。
 
 ## 联系我
 
 - GitHub：[:fontawesome-brands-github: your-name](https://github.com/your-name)
 - 邮箱：[:fontawesome-solid-envelope: you@example.com](mailto:you@example.com)
-- RSS：[:fontawesome-solid-rss: feed_rss_created.xml]({{ config.site_url }}feed_rss_created.xml)
 
 ## 版权
 

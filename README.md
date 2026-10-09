@@ -1,12 +1,13 @@
 # 我的技术博客
 
 一个用 [MkDocs](https://www.mkdocs.org/) + [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
-搭起来的技术博客脚手架。内容全是占位的，换成自己的就行。
+搭起来的技术笔记站。
 
-- 文章用 Markdown 写，`docs/blog/posts/` 下面丢一个 `.md` 就是一个新帖子
+- 笔记用 Markdown 写，放在 `docs/notes/` 下，目录结构和 `typst/` 里的原始笔记一一对应
 - 正文和代码字体都是[霞鹜文楷（LXGW WenKai）](https://github.com/lxgw/LxgwWenKai)，
   **字体自托管，不依赖任何 CDN**
-- 自带搜索、标签、归档、分类、RSS、图片灯箱、页脚更新日期
+- 自带搜索、标签、图片灯箱、页脚更新日期、站内 PDF 阅读器
+- 数学公式走 MathJax（全站唯一的外部依赖）
 
 ## 快速开始
 
@@ -39,54 +40,93 @@ python3 -m venv .venv
 
 ```text
 .
-├── mkdocs.yml                  # 全部配置
+├── mkdocs.yml                     # 全部配置
 ├── requirements.txt
 ├── docs/
-│   ├── index.md                # 首页
+│   ├── index.md                   # 首页
 │   ├── about.md
-│   ├── tags.md                 # 标签索引，内容由 tags 插件注入
-│   ├── blog/
-│   │   ├── index.md            # 博客入口（列表由 blog 插件生成）
-│   │   ├── .authors.yml        # 作者信息
-│   │   └── posts/              # ← 文章都放这里
-│   ├── notes/                  # 笔记
-│   ├── stylesheets/extra.css   # 自定义样式 + 字体变量
+│   ├── tags.md                    # 标签索引，内容由 tags 插件注入
+│   ├── notes/                     # ← 笔记都在这里
+│   │   ├── index.md
+│   │   ├── AI/                    # 和 typst/AI 对应
+│   │   │   └── DeepLearning/
+│   │   ├── Coding/                # 和 typst/Coding 对应
+│   │   │   └── python/
+│   │   ├── ComputerScience/       # 和 typst/ComputerScience 对应
+│   │   │   └── TCS/
+│   │   │       ├── index.md       # PDF 阅读页
+│   │   │       └── TCS.pdf
+│   │   └── Tools/                 # 和 typst/Tools 对应
+│   │       ├── Typst.md
+│   │       └── Else.md
+│   ├── javascripts/mathjax.js     # MathJax 配置
+│   ├── stylesheets/extra.css      # 自定义样式 + 字体变量 + PDF 阅读器
 │   └── assets/
-│       ├── fonts/lxgw-wenkai/  # 自托管字体（woff2 子集 + OFL 许可）
-│       └── images/
-└── site/                       # 构建产物，已 gitignore
+│       ├── fonts/lxgw-wenkai/     # 自托管字体（woff2 子集 + OFL 许可）
+│       ├── images/                # logo / favicon / 头像
+│       └── typst/                 # Typst 包效果图（由脚本生成）
+├── typst/                         # Typst 原始笔记（内容源头）
+├── typst-demos/                   # 每个 Typst 包的最小可编译示例
+├── scripts/
+│   └── render-typst-demos.ps1     # 重新渲染 docs/assets/typst/*
+└── site/                          # 构建产物，已 gitignore
 ```
 
-## 写一篇新文章
+## 写一篇新笔记
 
-在 `docs/blog/posts/` 下新建 `你的文件名.md`：
+在 `docs/notes/` 下按主题放一个新的 `.md`，然后到 `mkdocs.yml` 的 `nav:` 里补一行。
 
 ```markdown
 ---
-date: 2025-02-01
-slug: my-post-slug
-categories:
-  - Python
 tags:
-  - asyncio
-authors:
-  - your-name
+  - 深度学习
+  - PyTorch
 ---
 
 # 标题
 
-摘要部分写在 `<!-- more -->` 之前，会显示在博客列表里。
-
-<!-- more -->
-
 正文……
 ```
 
-- `date` 决定归档位置，最终地址是 `/blog/2025/02/01/my-post-slug/`
-- `slug` 决定 URL 里的最后一段。**不写的话会用标题做 slug**，
-  中文标题会变成百分号编码的地址，所以建议显式写一个英文 slug
-- 作者 id 要在 `docs/blog/.authors.yml` 里先定义好
-- `categories` 可以省略；标签插件读的是 `tags`
+只有 `tags` 是插件读的，其余 front matter 随便加。
+标签会汇总到[标签页](docs/tags.md)。
+
+## Typst 笔记怎么同步到站点
+
+`typst/` 是原始笔记，站点里的 Markdown 是它的搬运版。Typst 的语法和 Markdown
+差得不算远，手工搬运时注意这几处：
+
+| Typst | Markdown |
+| --- | --- |
+| `= 标题` / `==` / `===` | `#` / `##` / `###` |
+| `` `code` `` | 一样 |
+| ` ```py ` 围栏 | 一样，但语言名写在围栏后（`python`） |
+| `$d_0, dots.c, d_(n-1)$` | `$d_0, \dots, d_{n-1}$`——**Typst 数学不是 LaTeX**，要翻译 |
+| `- 列表` | 一样 |
+| `#image("x.png")` | `![说明](x.png)` |
+
+数学公式是最容易出错的地方：Typst 里 `dots.c`、`bb(R)`、`frac(a, b)` 这些写法
+在 MathJax 里都不认，得换成 `\dots`、`\mathbb{R}`、`\frac{a}{b}`。
+
+## Typst 包效果图
+
+`docs/notes/Tools/Typst.md` 里每个包都配了一张渲染出来的效果图。
+图不是截图，是用 `typst compile` 从 `typst-demos/*.typ` 真编出来的：
+
+```powershell
+pwsh -File scripts/render-typst-demos.ps1
+```
+
+脚本会把每个 `.typ` 编成 PNG 放进 `docs/assets/typst/`。
+改了示例重新跑一遍就行，不用手动截图。
+
+想加一个新包的演示：在 `typst-demos/` 里放一个 `.typ`，跑脚本，
+然后在 `Typst.md` 里加一段。
+
+!!! tip "为什么用 PNG 而不是 SVG"
+
+    `typst compile` 也能出 SVG，但 SVG 里的文字是引用字体名的，
+    访问者的机器上没装那个字体就会走样。PNG 是渲染好的位图，到哪儿都一样。
 
 ## 换成你自己的信息
 
@@ -94,15 +134,11 @@ authors:
 
 | 文件 | 改什么 |
 | --- | --- |
-| `mkdocs.yml` | `site_name`、`site_url`、`site_author`、`copyright`、`repo_url`、`repo_name`、`edit_uri`、`extra.social`、rss 插件的 `image` |
-| `docs/blog/.authors.yml` | 作者名字、简介、头像、主页 |
+| `mkdocs.yml` | `site_name`、`site_url`、`site_author`、`copyright`、`repo_url`、`repo_name`、`edit_uri`、`extra.social` |
 | `docs/about.md` | 自我介绍和联系方式 |
-| `docs/assets/images/` | `logo.svg`、`favicon.svg`、`avatar.svg`、`feed-logo.png` 换成自己的 |
+| `docs/assets/images/` | `logo.svg`、`favicon.svg`、`avatar.svg` 换成自己的 |
 
 改完 `repo_url` 之后，页面右上角的「编辑此页」才会指向正确的地址。
-
-`site_url` 和 rss 插件的 `image` 都得改：前者影响 RSS 里的链接和 sitemap，
-后者是 feed 的频道图标（必须绝对地址，插件不会自动补 `site_url`）。
 
 ## 字体
 
@@ -124,9 +160,9 @@ authors:
 | 页面 | 下载的子集数 | 体积 |
 | --- | --- | --- |
 | 首页 | 25 | ≈ 1.3 MB |
-| 文章页（含代码块） | 39 | ≈ 2.0 MB |
+| 内容页（含代码块） | 39 | ≈ 2.0 MB |
 
-子集是一次下载、全站复用的，翻第二篇文章时基本命中缓存。
+子集是一次下载、全站复用的，翻第二页时基本命中缓存。
 首次访问 1–2 MB 对中文字体站点来说属于正常范围，
 真嫌大的话见下面「瘦身」。
 
@@ -180,30 +216,67 @@ tar -xzf lxgw-wenkai-webfont-1.7.0.tgz
 CSS 里的 `url('./files/...')` 是相对路径，跟着 CSS 文件自己的位置解析，
 所以目录结构照搬就好，不用改内容。
 
-想换别的字体，把 `extra_css` 里的字体 CSS 换掉，
-再改 `extra.css` 里的 `--md-text-font` / `--md-code-font` 即可。
+## 站内 PDF 阅读器
+
+讲义类的内容直接嵌 PDF，用浏览器自带的查看器，不引入 pdf.js。
+
+目录必须长这样，因为 `<iframe>` 的 `src` 是相对路径：
+
+```text
+docs/notes/ComputerScience/TCS/
+├── index.md      # 页面
+└── TCS.pdf       # 和 index.md 同级，src 写 "TCS.pdf"
+```
+
+`index.md` 里：
+
+```html
+<div class="pdf-viewer">
+  <iframe src="TCS.pdf" title="讲义"></iframe>
+</div>
+```
+
+样式（边框、高度）在 `docs/stylesheets/extra.css` 的 `.pdf-viewer` 里调。
+移动端浏览器大多不会内联显示 PDF，所以页面上最好另外给一个下载链接。
+
+## 数学公式
+
+已经开好了，行内写 `$...$`，独立成行写 `$$...$$`，语法是 **LaTeX**（MathJax 3）。
+
+```yaml
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+```
+
+引擎本体走 CDN，是全站唯一的外部依赖。要完全离线就把上面
+`extra_javascript` 的两行删掉，代价是公式会显示成原始的 `$...$`。
+
+`processHtmlClass: "arithmatex"` 让 MathJax 只处理公式块，
+正文里出现的普通 `$` 不会被误伤。
 
 ## 已装的插件
 
 | 插件 | 用途 |
 | --- | --- |
 | `search`（内置） | 站内搜索，中文分词靠 `jieba` |
-| `blog`（内置） | 文章列表、分页、归档、分类、作者、阅读时长 |
 | `tags`（内置） | 标签索引页 |
 | `mkdocs-minify-plugin` | 压缩 HTML / CSS / JS |
 | `mkdocs-git-revision-date-localized-plugin` | 页脚显示创建 / 更新日期 |
-| `mkdocs-rss-plugin` | 生成 `feed_rss_created.xml` |
 | `mkdocs-glightbox` | 图片点击放大 |
-| `mkdocs-macros-plugin` | Markdown 里可用 Jinja2 变量（按页开启） |
 
 ## 配置里踩过的坑
 
-搭这个脚手架时实际踩到并修掉的，改配置前建议先看一眼。
+搭这个站时实际踩到并修掉的，改配置前建议先看一眼。
 
-!!! danger "1. `minify` 的 `css_files` 必须写精确路径，不能写 glob"
+!!! danger "1. `minify` 的 `css_files` / `js_files` 必须写精确路径，不能写 glob"
 
-    插件在 `on_pre_build` 阶段靠**字符串精确匹配**把 `extra_css` 里的条目
-    改写成 `xxx.min.css`，然后在 `on_post_build` 阶段按 `css_files` 去压缩和改名。
+    插件在 `on_pre_build` 阶段靠**字符串精确匹配**把 `extra_css` /
+    `extra_javascript` 里的条目改写成 `xxx.min.css`，然后在 `on_post_build`
+    阶段按 `css_files` 去压缩和改名。
 
     ```yaml
     extra_css:
@@ -218,89 +291,40 @@ CSS 里的 `url('./files/...')` 是相对路径，跟着 CSS 文件自己的位�
     写 glob 的后果很隐蔽：构建不报错，`site/stylesheets/extra.min.css` 也生成了，
     但 HTML 里还在引用 `extra.css`，于是自定义样式（包括字体变量）全部静默失效。
 
-!!! danger "2. `blog` 插件的入口在导航里必须有父级"
-
-    `mkdocs.yml` 里不能写：
-
-    ```yaml
-    nav:
-      - 博客: blog/index.md        # ← 错！这是一个没有父级的顶层 Page
-    ```
-
-    要写成 section 形式：
-
-    ```yaml
-    nav:
-      - 博客:
-          - blog/index.md          # ← 对，配合 navigation.indexes 当落地页
-    ```
-
-    插件源码里的判断是 `if not self.blog.parent: inclusion = NOT_IN_NAV`。
-    入口没有父级时，归档 / 分类 / 作者三个页面**照样会生成、能直接访问**，
-    但一个都不会挂到导航上，很容易以为是自己配置写错了。
-
-!!! warning "3. `tags_file` 在 Material 9.7 已废弃"
+!!! warning "2. `tags_file` 在 Material 9.7 已废弃"
 
     不要再写 `tags_file: tags.md`，会收到 deprecation 警告。
     现在只需要在任意页面里放一个 `<!-- material/tags -->` 指令，
     索引就会注入到那个位置。
 
-!!! warning "4. `git-revision-date-localized` 依赖 git 历史"
+!!! warning "3. `git-revision-date-localized` 依赖 git 历史"
 
     目录不是 git 仓库，或者文件还没提交过，构建会报错。
     配置里已经加了 `fallback_to_build_date: true` 兜底。
 
-!!! warning "5. `rss` 插件默认 `use_git: true`"
+!!! warning "4. `<iframe>` 的路径不会被 MkDocs 改写"
 
-    非 git 仓库下会刷警告。这里已经显式设成 `use_git: false`，
-    日期只认 front matter 里的 `date`。
+    Markdown 链接（`[x](a.pdf)`）和 `![](a.png)` 会被 MkDocs 按页面 URL
+    重写成相对路径，但裸 HTML 里的 `src="a.pdf"` 原样输出。
+    所以 PDF 必须和 `index.md` 放在同一层目录，用它俩共同的 URL 前缀兜住。
 
-!!! note "6. `macros` 插件默认会渲染所有页面"
-
-    `{{ }}` 写在代码块里也会被 Jinja 吃掉——技术博客迟早会写到
-    Jinja / Go template / Vue / Helm 的片段，这是个定时炸弹。
-    所以配置里设了 `render_by_default: false`，
-    只在 front matter 写了 `render_macros: true` 的页面才渲染。
-
-!!! note "7. 文章 URL 的 slug 来自标题，不是文件名"
-
-    `blog` 插件的 `post_slugify` 作用在**标题**上，中文标题会生成
-    百分号编码的 URL。示例文章都在 front matter 里显式写了 `slug:`，
-    想全局改成 ASCII 就自己替换 `post_slugify`。
-
-!!! note "8. `repo_url` 会触发一次 api.github.com 请求"
+!!! note "5. `repo_url` 会触发一次 api.github.com 请求"
 
     Material 用它拉 star / fork 数。仓库地址换成真的之后才有效，
-    占位地址下控制台会有一条 404，不影响任何功能。
+    占位地址下控制台会有一条 403，不影响任何功能。
 
-## 可选：数学公式
+!!! note "6. 如果以后要加 `macros` 插件，记得设 `render_by_default: false`"
 
-默认没开。需要的话：
+    它默认会把所有页面丢给 Jinja 渲染，**代码块里的 `{{ }}` 也会被吃掉**。
+    技术笔记迟早会写到 Jinja / Go template / Vue / Helm 的片段，
+    全局开着是个定时炸弹：
 
-1. 装 MathJax 配置，新建 `docs/javascripts/mathjax.js`：
+    ```yaml
+    - macros:
+        render_by_default: false
+    ```
 
-   ```js
-   window.MathJax = {
-     tex: {
-       inlineMath: [["\\(", "\\)"]],
-       displayMath: [["\\[", "\\]"]],
-       processEscapes: true,
-       processEnvironments: true
-     },
-     options: {
-       ignoreHtmlClass: ".*|",
-       processHtmlClass: "arithmatex"
-     }
-   };
-   ```
-
-2. `mkdocs.yml` 里打开 `extra_javascript` 的两行，并在
-   `markdown_extensions` 里加上：
-
-   ```yaml
-   - pymdownx.arithmatex:
-       generic: true
-   ```
+    然后在需要用的页面 front matter 里写 `render_macros: true`。
 
 ## 部署
 
@@ -311,4 +335,4 @@ CSS 里的 `url('./files/...')` 是相对路径，跟着 CSS 文件自己的位�
 - **自己的服务器**：Nginx 指向 `site/` 就行
 
 记得把 `mkdocs.yml` 里的 `site_url` 改成真实域名，
-`site_url` 会影响 RSS 里的链接和 sitemap。
+它会影响 sitemap 和页面里的绝对链接。

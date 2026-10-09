@@ -1,0 +1,6 @@
+- 色圖網站:https://colorsite.librian.net/
+- 手写风格作图白板:https://excalidraw.com/
+- 图标库:https://icones.netlify.app/
+- 自带动效的图标库:https://www.morphicons.com/
+- 图标库:https://lucide.dev/icons/
+- Typst图标查找:https://detypify.quarticcat.com/

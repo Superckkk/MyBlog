@@ -1,5 +1,5 @@
 # =============================================================================
-#  MkDocs 配置 —— 技术博客脚手架
+#  MkDocs 配置 —— 技术笔记站
 #
 #  本地预览： .venv\Scripts\python.exe -m mkdocs serve
 #  构建产物： .venv\Scripts\python.exe -m mkdocs build
@@ -9,7 +9,7 @@
 
 site_name: 我的技术博客
 site_url: https://example.com/
-site_description: 记录工程实践、源码阅读与一些零碎的思考
+site_description: 学习笔记与技术备忘
 site_author: 你的名字
 copyright: Copyright &copy; 2025 你的名字
 
@@ -71,7 +71,7 @@ theme:
     - content.code.select           # 代码块按行选中
     - content.code.annotate         # 代码块行内标注
     - content.tabs.link             # 跨页同步内容标签页
-    - content.tooltips              # 链接与脚注悬浮预览
+    - content.tooltips             # 链接与脚注悬浮预览
     - content.action.edit           # 编辑此页
     - content.action.view           # 查看源码
 
@@ -79,25 +79,29 @@ theme:
 # -----------------------------------------------------------------------------
 # 导航
 #
-# 博客相关的「归档 / 分类 / 作者」页面由 blog 插件自动挂到「博客」下面，
-# 不用在这里手写。
+# 目录名和 typst/ 下的结构一一对应，以后同步新笔记照着放就行。
+# 每个分组的第一个条目是 index.md，配合 navigation.indexes 当落地页。
 # -----------------------------------------------------------------------------
 nav:
   - 首页: index.md
-  # 注意：这里必须写成「有子项的 section」形式，不能写成 `- 博客: blog/index.md`。
-  # blog 插件要求入口页在导航里有父级（blog.parent），否则会把入口标记为
-  # NOT_IN_NAV，归档 / 分类 / 作者就都不会挂到导航上。
-  # 配合 navigation.indexes，blog/index.md 会自动成为这个 section 的落地页。
-  - 博客:
-      - blog/index.md
   - 笔记:
       - notes/index.md
-      - Python:
-          - notes/python/index.md
-          - 常用 pathlib 片段: notes/python/pathlib-recipes.md
-      - 工具链:
-          - notes/tooling/index.md
-          - 我的 Git 别名: notes/tooling/git-aliases.md
+      - AI:
+          - notes/AI/index.md
+          - 深度学习:
+              - notes/AI/DeepLearning/index.md
+              - 数据操作: notes/AI/DeepLearning/数据操作.md
+      - Coding:
+          - notes/Coding/index.md
+          - Python:
+              - notes/Coding/python/index.md
+      - ComputerScience:
+          - notes/ComputerScience/index.md
+          - 理论计算机科学: notes/ComputerScience/TCS/index.md
+      - Tools:
+          - notes/Tools/index.md
+          - Typst 的好用包: notes/Tools/Typst.md
+          - 其它在线工具: notes/Tools/Else.md
   - 标签: tags.md
   - 关于: about.md
 
@@ -113,30 +117,6 @@ plugins:
         - en
       separator: '[\s\u200b\-]'
 
-  # 博客：文章列表、分页、归档、分类、作者、阅读时长
-  - blog:
-      blog_dir: blog
-      post_dir: "{blog}/posts"
-      post_url_date_format: yyyy/MM/dd
-      post_url_format: "{date}/{slug}"
-      post_excerpt: optional
-      post_excerpt_separator: "<!-- more -->"
-      post_readtime: true
-      post_readtime_words_per_minute: 350   # 中文按字算，比默认的 265 更接近实际
-      archive: true
-      archive_name: 归档
-      archive_date_format: yyyy 年 MMMM
-      archive_url_date_format: yyyy/MM
-      categories: true
-      categories_name: 分类
-      authors: true
-      authors_file: "{blog}/.authors.yml"
-      authors_profiles: true                # 顺便生成作者主页
-      authors_profiles_name: 作者
-      pagination: true
-      pagination_per_page: 8
-      pagination_url_format: "page/{page}"
-
   # 标签索引。内容由 docs/tags.md 里的 <!-- material/tags --> 指令注入。
   # 注意：不要再配 tags_file，Material 9.7 起这个选项已废弃。
   - tags:
@@ -144,17 +124,17 @@ plugins:
       listings_toc: true
 
   # 压缩产物。
-  # 注意：css_files 必须写 extra_css 里那条**一模一样**的路径（不能写 glob）。
-  # 插件在 on_pre_build 时靠精确匹配把 extra_css 改写成 extra.min.css，
-  # 写 glob 的话改名会发生、引用不会改，页面就 404 了。
+  # 注意：css_files / js_files 必须写 extra_css / extra_javascript 里那条
+  # **一模一样**的路径（不能写 glob）。插件在 on_pre_build 时靠精确匹配把引用
+  # 改写成 xxx.min.css，写 glob 的话改名会发生、引用不会改，页面就 404 了。
   - minify:
       minify_html: true
       minify_css: true
       minify_js: true
       css_files:
         - stylesheets/extra.css
-      # js_files:
-      #   - javascripts/extra.js   # 自己加了 JS 之后，同样要写精确路径
+      js_files:
+        - javascripts/mathjax.js
 
   # 每页显示创建 / 最后更新日期（读 git 记录，需要仓库有提交历史）
   - git-revision-date-localized:
@@ -164,39 +144,8 @@ plugins:
       fallback_to_build_date: true
       enable_git_follow: false
 
-  # RSS / Atom 订阅源，产出在站点根目录：feed_rss_created.xml
-  - rss:
-      match_path: blog/posts/.*
-      date_from_meta:
-        as_creation: date
-        as_update: date
-        datetime_format: "%Y-%m-%d"
-      categories:
-        - categories
-        - tags
-      use_git: false          # 只认 front matter 里的 date，不依赖 git 历史
-      rss_feed_enabled: true
-      json_feed_enabled: false
-      length: 20
-      pretty_print: true
-      # 频道图标。用浏览器直接打开 feed 时 XSL 会渲染它；不填的话 XSL 会吐出
-      # 一个 <img src="None"> 的 404。必须写绝对地址（插件原样输出，不会补 site_url），
-      # 所以换域名时记得和上面的 site_url 一起改。
-      # RSS 阅读器普遍只认 PNG / JPEG / GIF，别换成 svg。
-      image: https://example.com/assets/images/feed-logo.png
-      # 想让 <updated> 用 git 的最后提交时间：
-      # as_update 改成 git，并把 use_git 打开
-
   # 图片点击放大
   - glightbox
-
-  # Markdown 里可以用 Jinja2 变量（比如 {{ config.site_url }}）。
-  # render_by_default 设成 false 是按页开关：只有 front matter 里写了
-  # render_macros: true 的页面才会被渲染。
-  # 技术博客的代码片段里出现 {{ }} 太常见了（Jinja、Go template、Vue、Helm……），
-  # 全局开启迟早会把某段代码吃掉，所以这里默认关掉。
-  - macros:
-      render_by_default: false
 
 
 # -----------------------------------------------------------------------------
@@ -225,6 +174,11 @@ markdown_extensions:
   - pymdownx.smartsymbols
   - pymdownx.snippets
   - pymdownx.inlinehilite
+
+  # 数学公式。generic 模式覆盖 $...$ 和 $$...$$，
+  # 实际渲染交给下面的 MathJax。
+  - pymdownx.arithmatex:
+      generic: true
 
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
@@ -256,13 +210,14 @@ extra_css:
   - assets/fonts/lxgw-wenkai/lxgwwenkai-regular.css
   - assets/fonts/lxgw-wenkai/lxgwwenkai-bold.css
   - assets/fonts/lxgw-wenkai/lxgwwenkaimono-regular.css
-  # 站点自定义样式（含字体变量）
+  # 站点自定义样式（含字体变量、PDF 阅读器、Typst 效果图）
   - stylesheets/extra.css
 
-# extra_javascript:
-#   # 需要数学公式时打开，并同时启用下面的 pymdownx.arithmatex
-#   - javascripts/mathjax.js
-#   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+# 数学公式：本地放一份 MathJax 配置，引擎本体走 CDN。
+# 全站唯一的外部依赖，介意的话把下面两行删掉，行内公式会退化成原始的 $...$。
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 
 # -----------------------------------------------------------------------------
@@ -276,6 +231,3 @@ extra:
     - icon: fontawesome/solid/envelope
       link: mailto:you@example.com
       name: 邮箱
-    - icon: fontawesome/solid/rss
-      link: /feed_rss_created.xml
-      name: RSS 订阅

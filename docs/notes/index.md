@@ -5,32 +5,46 @@ tags:
 
 # 笔记
 
-不成篇的片段。命令、配置、API 速查，写给自己看的，排版不讲究。
-
-按主题分了几块，左边导航里能直接跳。
+按主题分了几块，左边导航能直接跳。
 
 <div class="grid cards" markdown>
 
--   :fontawesome-brands-python:{ .lg .middle } __Python__
+-   :material-brain:{ .lg .middle } __AI__
 
     ---
 
-    标准库里的坑、常用片段、类型标注。
+    机器学习和深度学习的读书笔记。
 
-    [:octicons-arrow-right-24: 去看](python/index.md)
+    [:octicons-arrow-right-24: 去看](AI/index.md)
 
--   :material-console:{ .lg .middle } __工具链__
+-   :material-code-braces:{ .lg .middle } __Coding__
 
     ---
 
-    Git、Shell、编辑器配置这些每天都在用的东西。
+    语言、库、工程实践。
 
-    [:octicons-arrow-right-24: 去看](tooling/index.md)
+    [:octicons-arrow-right-24: 去看](Coding/index.md)
+
+-   :material-school-outline:{ .lg .middle } __ComputerScience__
+
+    ---
+
+    课程笔记和讲义。
+
+    [:octicons-arrow-right-24: 去看](ComputerScience/index.md)
+
+-   :material-tools:{ .lg .middle } __Tools__
+
+    ---
+
+    顺手的工具和配置，记下来省得下次重找。
+
+    [:octicons-arrow-right-24: 去看](Tools/index.md)
 
 </div>
 
 ## 写笔记的约定
 
 - 一条笔记只讲一件事，标题就是结论。
-- 能贴命令就别写描述。
-- 过期了就直接删，不留"历史遗留"。
+- 能贴代码就别写描述。
+- 过期了就直接删，不留「历史遗留」。

@@ -1,4 +1,4 @@
-# MkDocs 技术博客依赖
+# MkDocs 技术笔记站依赖
 #
 # 首次安装（Windows PowerShell）：
 #   python -m venv .venv
@@ -13,9 +13,7 @@ mkdocs-material==9.7.7
 # —— 插件 ——
 mkdocs-minify-plugin==0.8.0
 mkdocs-git-revision-date-localized-plugin==1.6.0
-mkdocs-rss-plugin==1.19.0
 mkdocs-glightbox==0.5.2
-mkdocs-macros-plugin==1.5.0
 
 # Material 内置搜索的中文分词，不装的话中文搜索基本不可用
 jieba==0.42.1

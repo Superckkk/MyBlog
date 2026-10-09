@@ -82,12 +82,48 @@
    3. 博客列表的小调整
    -------------------------------------------------------------------------- */
 
-/* 首页博客卡片标题用真粗体，和下面正文拉开对比 */
-.md-post--excerpt .md-post__title {
-  font-weight: 700;
+/* --------------------------------------------------------------------------
+   3. 站内 PDF 阅读器
+   --------------------------------------------------------------------------
+   用浏览器自带的 PDF 查看器，不引入 pdf.js，零依赖。
+   iframe 的 src 写的是相对路径，所以 PDF 必须和 index.md 放在同一层目录。
+   -------------------------------------------------------------------------- */
+.pdf-viewer {
+  margin: 1.2rem 0;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.2rem;
+  overflow: hidden;
+  background: var(--md-default-fg-color--lightest);
 }
 
-/* 文章底部的分类 / 标签胶囊 */
-.md-post__meta .md-tag {
-  font-weight: 400;
+.pdf-viewer iframe {
+  display: block;
+  width: 100%;
+  height: 80vh;
+  min-height: 480px;
+  border: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   4. Typst 效果图
+   --------------------------------------------------------------------------
+   typst compile 出来的都是白底 PNG，深色模式下会糊成一块白。
+   加个边框和圆角，看起来像「文档截图」而不是漏白的图。
+   -------------------------------------------------------------------------- */
+.md-typeset img[src*="/assets/typst/"] {
+  display: block;
+  max-width: 100%;
+  margin: 0.8rem 0;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.2rem;
+  background: #fff;
+}
+
+/* 效果图下面的斜体说明 */
+.md-typeset img[src*="/assets/typst/"] + em {
+  display: block;
+  margin-top: -0.3rem;
+  font-size: 0.75rem;
+  color: var(--md-default-fg-color--light);
 }
