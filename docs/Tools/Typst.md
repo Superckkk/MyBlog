@@ -41,7 +41,7 @@ tags:
 一句话概括：**给它一张状态转移表，它给你画出一张能直接放进讲义的状态图。**
 起始状态、接受状态、转移边上的标签都能标，布局可以自动也可以手工给坐标。
 
-![finite 渲染效果](../../assets/typst/finite.png)
+![finite 渲染效果](../assets/typst/finite.png)
 *一个接受「以 01 结尾的二进制串」的 DFA，由 `typst-demos/finite.typ` 编译得到*
 
 写理论计算机科学的作业时特别省事——不用再拿 draw.io 手拖箭头，
@@ -76,7 +76,7 @@ tags:
 用**中括号嵌套**描述树的结构，第一层包一层，比手写坐标直观得多。
 节点标签加 `^` 前缀会渲染成不带横线的三角形，这是语言学里画短语结构树的惯例画法。
 
-![syntree 渲染效果](../../assets/typst/syntree.png)
+![syntree 渲染效果](../assets/typst/syntree.png)
 *`The cat sat on the mat` 的短语结构树，由 `typst-demos/syntree.typ` 编译得到*
 
 ??? example "源码"
@@ -114,7 +114,7 @@ tags:
 日程表、项目排期用这个。`headerline` 定义时间刻度（可以分层，比如「年份 + 月份」），
 `taskgroup` / `task` 排任务条，`milestone` 插里程碑。
 
-![timeliney 渲染效果](../../assets/typst/timeliney.png)
+![timeliney 渲染效果](../assets/typst/timeliney.png)
 *一份 6 个月的项目排期，由 `typst-demos/timeliney.typ` 编译得到*
 
 和用表格硬拼甘特图相比，好处是任务有先后依赖时不用手工对齐格子——
@@ -171,12 +171,12 @@ tags:
 配色、图标、标题文案都是预设好的，标题还会跟着 `text(lang)` 自动切换语言——
 所以只要写一行 `#set text(lang: "zh")`，出来的就是「信息 / 警告 / 提示」。
 
-![gentle-clues 渲染效果](../../assets/typst/gentle-clues.png)
+![gentle-clues 渲染效果](../assets/typst/gentle-clues.png)
 *三种最常用的提示框，由 `typst-demos/gentle-clues.typ` 编译得到*
 
 它一共内置了十几种语义，覆盖得很全：
 
-![gentle-clues 全部样式](../../assets/typst/gentle-clues-overview.png)
+![gentle-clues 全部样式](../assets/typst/gentle-clues-overview.png)
 *内置的全部提示框类型*
 
 适合「写作过程中随手标注」——想到要提醒读者一句，敲四个字符就完事，
@@ -203,7 +203,7 @@ tags:
 showybox 只提供「画盒子」这一件事：标题栏配色、正文底色、边框粗细、圆角、阴影
 全部要自己指定。代码比 gentle-clues 长，换来的是完全可控。
 
-![showybox 渲染效果](../../assets/typst/showybox.png)
+![showybox 渲染效果](../assets/typst/showybox.png)
 *一个自定义配色的盒子，由 `typst-demos/showybox.typ` 编译得到*
 
 两者的取舍很清楚：
@@ -256,7 +256,7 @@ Typst Universe 上写伪代码的包不止一个。我试了三个，差别主�
 也没有注释语法——**关键字就是你自己的 markup**，想让它们变粗就自己加粗。
 代价是每行都要自己安排，好处是外观完全可控。
 
-![lovelace 渲染效果](../../assets/typst/lovelace.png)
+![lovelace 渲染效果](../assets/typst/lovelace.png)
 *同一段二分查找，由 `typst-demos/lovelace.typ` 编译得到*
 
 !!! tip "注释要转义"
@@ -298,7 +298,7 @@ Typst Universe 上写伪代码的包不止一个。我试了三个，差别主�
 模仿 LaTeX 的 `algorithmicx`。关键字、缩进、行号、竖参考线全都是自动的，
 还会自动加上 `Algorithm 1: Binary Search` 这样的标题——投论文要的就是这个效果。
 
-![algorithmic 渲染效果](../../assets/typst/algorithmic.png)
+![algorithmic 渲染效果](../assets/typst/algorithmic.png)
 *同一段二分查找，由 `typst-demos/algorithmic.typ` 编译得到*
 
 代价是**语法最啰嗦**：每个语句都是一个函数调用，条件、正文、分支要分别包在
@@ -343,7 +343,7 @@ Typst Universe 上写伪代码的包不止一个。我试了三个，差别主�
 `algo` 把伪代码当成一个内容块来写：`\` 表示换行，`#i` / `#d` 表示进入和退出一层缩进，
 关键字（`while`、`if`、`return`……）由包自动加粗。
 
-![algo 渲染效果](../../assets/typst/algo.png)
+![algo 渲染效果](../assets/typst/algo.png)
 *同一段二分查找，由 `typst-demos/algo.typ` 编译得到*
 
 源码读起来最接近伪代码本身，但缩进得自己数——`#i` 和 `#d` 要配对，
@@ -410,7 +410,7 @@ Typst Universe 上写伪代码的包不止一个。我试了三个，差别主�
 用写文档的方式写 slides：`==` 标题就是一页，版式交给主题统一管，
 公式、代码高亮、`#alert[...]` 增量动画都是内置的，编出来是 16:9 的 PDF。
 
-![Touying 渲染效果](../../assets/typst/touying.png)
+![Touying 渲染效果](../assets/typst/touying.png)
 *metropolis 主题的一页内容页，由 `typst-demos/touying.typ` 编译得到*
 
 Touying 是目前 Typst 生态里最成熟的幻灯片方案，自带主题不少，
@@ -460,7 +460,7 @@ Touying 是目前 Typst 生态里最成熟的幻灯片方案，自带主题不�
 Typst 一直没有原生的图文绕排（文字沿着图片边缘流动），wrap-it 补上了这块。
 原理是把图形和正文放进同一个网格，让正文在图形之外的列里换行。
 
-![wrap-it 渲染效果](../../assets/typst/wrap-it.png)
+![wrap-it 渲染效果](../assets/typst/wrap-it.png)
 *两张卡片分别贴左、贴右，正文绕开它们排，由 `typst-demos/wrap-it.typ` 编译得到*
 
 用法是 `wrap-top-bottom(顶部图形, 底部图形, 正文)`：上面那个图贴左边，
@@ -529,7 +529,7 @@ Typst 一直没有原生的图文绕排（文字沿着图片边缘流动），wr
 Typst 原生的 `raw` 代码块没有行号、没有语言标签，也不能高亮某几行。
 zebraw 就是来补这些的。
 
-![zebraw 渲染效果](../../assets/typst/zebraw.png)
+![zebraw 渲染效果](../assets/typst/zebraw.png)
 *行号 + 右上角语言标识 + 第 3、4 行高亮，由 `typst-demos/zebraw.typ` 编译得到*
 
 三个开关都在这段里：
@@ -597,7 +597,7 @@ conch 解决的是「怎么在文档里放一段终端输出」这件事。
 conch 让你直接写命令，它在一个虚拟文件系统里**真的执行**，然后把带配色和语法高亮的
 终端窗口渲染出来。改哪条命令就改哪一行代码，重新编译即可。
 
-![conch 渲染效果](../../assets/typst/conch.png)
+![conch 渲染效果](../assets/typst/conch.png)
 *一段完整的会话：列目录、看脚本、跑脚本、装依赖，由 `typst-demos/conch.typ` 编译得到*
 
 演示里的几个细节值得一提：

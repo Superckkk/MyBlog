@@ -79,29 +79,30 @@ theme:
 # -----------------------------------------------------------------------------
 # 导航
 #
-# 目录名和 typst/ 下的结构一一对应，以后同步新笔记照着放就行。
-# 每个分组的第一个条目是 index.md，配合 navigation.indexes 当落地页。
+# AI / Coding / ComputerScience / Tools 是顶层 section，配合 navigation.tabs
+# 直接变成顶栏的那几个 tab；每个 section 的第一项是它自己的 index.md，
+# 靠 navigation.indexes 当落地页（点 tab 就进这一页）。
+#
+# 目录结构也和 typst/ 下的源目录一一对应，以后同步新笔记照着放就行。
 # -----------------------------------------------------------------------------
 nav:
   - 首页: index.md
-  - 笔记:
-      - notes/index.md
-      - AI:
-          - notes/AI/index.md
-          - 深度学习:
-              - notes/AI/DeepLearning/index.md
-              - 数据操作: notes/AI/DeepLearning/数据操作.md
-      - Coding:
-          - notes/Coding/index.md
-          - Python:
-              - notes/Coding/python/index.md
-      - ComputerScience:
-          - notes/ComputerScience/index.md
-          - 理论计算机科学: notes/ComputerScience/TCS/index.md
-      - Tools:
-          - notes/Tools/index.md
-          - Typst 的好用包: notes/Tools/Typst.md
-          - 其它在线工具: notes/Tools/Else.md
+  - AI:
+      - AI/index.md
+      - 深度学习:
+          - AI/DeepLearning/index.md
+          - 数据操作: AI/DeepLearning/数据操作.md
+  - Coding:
+      - Coding/index.md
+      - Python:
+          - Coding/python/index.md
+  - ComputerScience:
+      - ComputerScience/index.md
+      - 理论计算机科学: ComputerScience/TCS/index.md
+  - Tools:
+      - Tools/index.md
+      - Typst 的好用包: Tools/Typst.md
+      - 其它在线工具: Tools/Else.md
   - 标签: tags.md
   - 关于: about.md
 

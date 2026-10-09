@@ -5,7 +5,9 @@
 一个用 [MkDocs](https://www.mkdocs.org/) + [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 搭起来的技术笔记站。
 
-- 笔记用 Markdown 写，放在 `docs/notes/` 下，目录结构和 `typst/` 里的原始笔记一一对应
+- 笔记用 Markdown 写，按主题放进 `docs/` 下对应的目录（`AI` / `Coding` / `ComputerScience` / `Tools`），
+  结构和 `typst/` 里的原始笔记一一对应
+- 这四个目录同时就是顶栏的四个 tab，加新笔记时记得去 `mkdocs.yml` 的 `nav:` 里挂一行
 - 正文和代码字体都是[霞鹜文楷（LXGW WenKai）](https://github.com/lxgw/LxgwWenKai)，
   **字体自托管，不依赖任何 CDN**
 - 自带搜索、标签、图片灯箱、页脚更新日期、站内 PDF 阅读器
@@ -48,26 +50,25 @@ python3 -m venv .venv
 │   ├── index.md                   # 首页
 │   ├── about.md
 │   ├── tags.md                    # 标签索引，内容由 tags 插件注入
-│   ├── notes/                     # ← 笔记都在这里
-│   │   ├── index.md
-│   │   ├── AI/                    # 和 typst/AI 对应
-│   │   │   └── DeepLearning/
-│   │   ├── Coding/                # 和 typst/Coding 对应
-│   │   │   └── python/
-│   │   ├── ComputerScience/       # 和 typst/ComputerScience 对应
-│   │   │   └── TCS/
-│   │   │       ├── index.md       # PDF 阅读页
-│   │   │       └── TCS.pdf
-│   │   └── Tools/                 # 和 typst/Tools 对应
-│   │       ├── Typst.md
-│   │       └── Else.md
+│   ├── CNAME                      # GitHub Pages 自定义域名
+│   ├── AI/                        # ↓ 这四个目录对应顶栏的四个 tab
+│   │   └── DeepLearning/          #   每个目录的 index.md 是该 tab 的落地页
+│   ├── Coding/
+│   │   └── python/
+│   ├── ComputerScience/
+│   │   └── TCS/
+│   │       ├── index.md           # PDF 阅读页
+│   │       └── TCS.pdf
+│   ├── Tools/
+│   │   ├── Typst.md
+│   │   └── Else.md
 │   ├── javascripts/mathjax.js     # MathJax 配置
 │   ├── stylesheets/extra.css      # 自定义样式 + 字体变量 + PDF 阅读器
 │   └── assets/
 │       ├── fonts/lxgw-wenkai/     # 自托管字体（woff2 子集 + OFL 许可）
 │       ├── images/                # logo / favicon / 头像
 │       └── typst/                 # Typst 包效果图（由脚本生成）
-├── typst/                         # Typst 原始笔记（内容源头）
+├── typst/                         # Typst 原始笔记（内容源头，结构同上）
 ├── typst-demos/                   # 每个 Typst 包的最小可编译示例
 ├── scripts/
 │   └── render-typst-demos.ps1     # 重新渲染 docs/assets/typst/*
@@ -76,7 +77,7 @@ python3 -m venv .venv
 
 ## 写一篇新笔记
 
-在 `docs/notes/` 下按主题放一个新的 `.md`，然后到 `mkdocs.yml` 的 `nav:` 里补一行。
+在 `docs/` 下对应的主题目录里放一个新的 `.md`，然后到 `mkdocs.yml` 的 `nav:` 里补一行。
 
 ```markdown
 ---
@@ -112,7 +113,7 @@ tags:
 
 ## Typst 包效果图
 
-`docs/notes/Tools/Typst.md` 里每个包都配了一张渲染出来的效果图。
+`docs/Tools/Typst.md` 里每个包都配了一张渲染出来的效果图。
 图不是截图，是用 `typst compile` 从 `typst-demos/*.typ` 真编出来的：
 
 ```powershell
@@ -226,19 +227,24 @@ CSS 里的 `url('./files/...')` 是相对路径，跟着 CSS 文件自己的位�
 
 讲义类的内容直接嵌 PDF，用浏览器自带的查看器，不引入 pdf.js。
 
-目录必须长这样，因为 `<iframe>` 的 `src` 是相对路径：
+目录必须长这样，因为 `<object>` 的 `data` 是相对路径：
 
 ```text
-docs/notes/ComputerScience/TCS/
+docs/ComputerScience/TCS/
 ├── index.md      # 页面
-└── TCS.pdf       # 和 index.md 同级，src 写 "TCS.pdf"
+└── TCS.pdf       # 和 index.md 同级，data 写 "TCS.pdf"
 ```
 
 `index.md` 里：
 
 ```html
 <div class="pdf-viewer">
-  <iframe src="TCS.pdf" title="讲义"></iframe>
+  <object data="TCS.pdf" type="application/pdf" title="讲义">
+    <p class="pdf-fallback">
+      你的浏览器没有内嵌 PDF 查看器（移动端比较常见）。
+      <a href="TCS.pdf">点这里下载讲义</a>。
+    </p>
+  </object>
 </div>
 ```
 
@@ -308,11 +314,11 @@ extra_javascript:
     目录不是 git 仓库，或者文件还没提交过，构建会报错。
     配置里已经加了 `fallback_to_build_date: true` 兜底。
 
-!!! warning "4. `<iframe>` 的路径不会被 MkDocs 改写"
+!!! warning "4. 裸 HTML 里的路径不会被 MkDocs 改写"
 
     Markdown 链接（`[x](a.pdf)`）和 `![](a.png)` 会被 MkDocs 按页面 URL
-    重写成相对路径，但裸 HTML 里的 `src="a.pdf"` 原样输出。
-    所以 PDF 必须和 `index.md` 放在同一层目录，用它俩共同的 URL 前缀兜住。
+    重写成正确的相对路径，但裸 HTML 里的 `src=` / `data=` 原样输出。
+    所以 PDF 必须和 `index.md` 放在同一层目录，用它们共同的 URL 前缀兜住。
 
 !!! note "5. `repo_url` 会触发一次 api.github.com 请求"
 

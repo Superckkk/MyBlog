@@ -11,7 +11,7 @@
 
     机器学习、深度学习的读书笔记。
 
-    [:octicons-arrow-right-24: 去看](notes/AI/index.md)
+    [:octicons-arrow-right-24: 去看](AI/index.md)
 
 -   :material-code-braces:{ .lg .middle } __Coding__
 
@@ -19,7 +19,7 @@
 
     语言、库、工程实践。
 
-    [:octicons-arrow-right-24: 去看](notes/Coding/index.md)
+    [:octicons-arrow-right-24: 去看](Coding/index.md)
 
 -   :material-school-outline:{ .lg .middle } __ComputerScience__
 
@@ -27,7 +27,7 @@
 
     课程笔记和讲义，包括理论计算机科学。
 
-    [:octicons-arrow-right-24: 去看](notes/ComputerScience/index.md)
+    [:octicons-arrow-right-24: 去看](ComputerScience/index.md)
 
 -   :material-tools:{ .lg .middle } __Tools__
 
@@ -35,9 +35,22 @@
 
     Typst 的包、在线工具，以及各种配置。
 
-    [:octicons-arrow-right-24: 去看](notes/Tools/index.md)
+    [:octicons-arrow-right-24: 去看](Tools/index.md)
 
 </div>
+
+## 最近写的
+
+- [Typst 的一些好用的包](Tools/Typst.md) —— 每个包都配了能直接跑的最小示例和渲染结果
+- [理论计算机科学（Language and Automaton）](ComputerScience/TCS/index.md) —— 讲义 PDF，站内可看
+- [数据操作](AI/DeepLearning/数据操作.md) —— N 维数组与 PyTorch 张量
+- [其它在线工具](Tools/Else.md) —— 配色、图标、白板
+
+## 写笔记的约定
+
+- 一条笔记只讲一件事，标题就是结论。
+- 能贴代码就别写描述。
+- 过期了就直接删，不留「历史遗留」。
 
 ## 这个站点
 
@@ -46,10 +59,3 @@
 
 正文字体用的是[霞鹜文楷](https://github.com/lxgw/LxgwWenKai)，字体文件自托管，
 不依赖外部 CDN。
-
-## 最近写的
-
-- [Typst 的一些好用的包](notes/Tools/Typst.md) —— 每个包都配了能直接跑的最小示例和渲染结果
-- [理论计算机科学（Language and Automaton）](notes/ComputerScience/TCS/index.md) —— 讲义 PDF，站内可看
-- [数据操作](notes/AI/DeepLearning/数据操作.md) —— N 维数组与 PyTorch 张量
-- [其它在线工具](notes/Tools/Else.md) —— 配色、图标、白板
