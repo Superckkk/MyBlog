@@ -1,0 +1,68 @@
+# 推送到 main 就自动构建并发布到 GitHub Pages
+#
+# 首次使用记得在仓库里做两件事：
+#   1. Settings → Pages → Build and deployment → Source 选 "GitHub Actions"
+#   2. Settings → Pages → Custom domain 填 turingckkk.com，等证书签发后勾上 Enforce HTTPS
+#
+# docs/CNAME 里已经写了域名，第 2 步通常会自动带出来，但最好确认一下。
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # 支持在 Actions 页面手动触发
+
+# GITHUB_TOKEN 需要这三个权限才能发布 Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只跑一个发布，排队而不是取消，避免发到一半被打断
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # 必须拉全量历史：git-revision-date-localized 要靠 git log
+          # 给每页算创建/更新日期。默认的浅克隆会让日期全部变成构建时间。
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build site
+        run: mkdocs build --strict
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
