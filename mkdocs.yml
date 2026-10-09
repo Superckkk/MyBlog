@@ -163,8 +163,12 @@ markdown_extensions:
       permalink: "#"
       title: 本页目录
 
-  - pymdownx.betterem:
-      smart_enable: all
+  # 注意：这里千万不要写成 `pymdownx.betterem: {smart_enable: all}`。
+  # Material 官方文档推荐那样写，但它对中文是灾难：
+  # smart_strong 用 \w 判断词边界，而 Python 的 \w 是匹配汉字的。
+  # 中文没有空格，`是**粗体**：` 会被判成「词中间」而拒绝加粗，
+  # 于是全站中文加粗静默失效，页面上直接显示字面的 **。
+  - pymdownx.betterem
   - pymdownx.caret
   - pymdownx.mark
   - pymdownx.tilde

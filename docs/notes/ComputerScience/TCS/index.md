@@ -10,7 +10,12 @@ tags:
 也可以直接[下载 PDF](TCS.pdf)存本地。
 
 <div class="pdf-viewer">
-  <iframe src="TCS.pdf" title="Language and Automaton 讲义"></iframe>
+  <object data="TCS.pdf" type="application/pdf" title="Language and Automaton 讲义">
+    <p class="pdf-fallback">
+      你的浏览器没有内嵌 PDF 查看器（移动端比较常见）。
+      <a href="TCS.pdf">点这里下载讲义</a>。
+    </p>
+  </object>
 </div>
 
 ## 讲义大纲

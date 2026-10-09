@@ -15,7 +15,7 @@
     Assign[$"low"$][$1$]
     Assign[$"high"$][$"A.length"$]
     While($"low" <= "high"$, {
-      Assign[$"mid"$][FnInline[floor][$("low" + "high") / 2$]]
+      Assign($"mid"$, FnInline[floor][$("low" + "high") / 2$])
       IfElseChain(
         $"A"["mid"] = "target"$,
         { Return[$"mid"$] },

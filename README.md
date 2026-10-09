@@ -326,6 +326,31 @@ extra_javascript:
 
     然后在需要用的页面 front matter 里写 `render_macros: true`。
 
+!!! danger "7. 别给 `pymdownx.betterem` 加 `smart_enable: all`"
+
+    Material 官方文档推荐这么写，但**它会让中文加粗全线失效**。
+
+    `smart_strong` 靠 `\w` 判断词边界，而 Python 的正则里 `\w` **是匹配汉字的**。
+    中文没有空格，`是**粗体**：` 的两个 `**` 前后都是「词字符」，
+    于是被判成「词中间出现的星号」直接拒绝加粗——页面上原样显示 `**粗体**`。
+
+    改配置时很容易照着官方文档把它加回来，加完页面也不会报错，只是加粗悄悄没了：
+
+    ```yaml
+    # 不要这样写
+    - pymdownx.betterem:
+        smart_enable: all
+    ```
+
+    ```yaml
+    # 正确
+    - pymdownx.betterem
+    ```
+
+    排查提示：这类问题在单文件小样例里复现不出来。用 `markdown.Markdown(extensions=[...])`
+    手动转换时，列表里的 `{扩展名: {配置}}` 字典形式未必会生效，
+    表现和 MkDocs 实际构建不一致。**要验证就得 `mkdocs build` 完再看产物。**
+
 ## 部署
 
 `site/` 是纯静态文件，丢哪儿都行。

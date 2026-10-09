@@ -17,11 +17,11 @@
   #comment(inline: true)[A is sorted in ascending order]\
   $"low" <- 1$\
   $"high" <- "A.length"$\
-  while $"low" <= "high":#i\
+  while $"low" <= "high"$:#i\
     $"mid" <- "floor"(("low" + "high") / 2)$\
-    if $"A"["mid"] = "target":#i\
+    if $"A"["mid"] = "target"$:#i\
       return $"mid"$#d\
-    else if $"A"["mid"] < "target":#i\
+    else if $"A"["mid"] < "target"$:#i\
       $"low" <- "mid" + 1$#d\
     else:#i\
       $"high" <- "mid" - 1$#d#d\

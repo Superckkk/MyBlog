@@ -240,10 +240,166 @@ showybox 只提供「画盒子」这一件事：标题栏配色、正文底色�
 
 ## 伪代码
 
-Typst Universe 上写伪代码的包不止一个，我试过三个，差别主要在两处：
-**语法有多重**，以及**默认排出来长什么样**。
+Typst Universe 上写伪代码的包不止一个。我试了三个，差别主要在两处：
+**语法有多重**，以及**默认排出来长什么样**。下面三段排的是同一个二分查找，
+可以横向比较。
 
-<!-- PSEUDOCODE-SECTION -->
+| 包 | 语法 | 默认排版 |
+| --- | --- | --- |
+| `lovelace` | **最轻**：就是一个普通列表，缩进即层级，不提供任何关键字或注释语法 | 素净，没有行号和参考线，关键字要自己加粗 |
+| `algorithmic` | **最重**：`Procedure` / `While` / `IfElseChain` 这些结构化函数，参数是数组和代码块 | 最像论文，自动编号标题、行号、竖参考线、自动缩进 |
+| `algo` | **中等**：内容块 + `\` 换行 + `#i` / `#d` 标记缩进 | 关键字自动加粗，版式紧凑，但缩进要自己标 |
+
+### lovelace · 最不预设立场
+
+它只做一件事：把列表渲染成伪代码的样子。没有 `while`/`if` 这种关键字函数，
+也没有注释语法——**关键字就是你自己的 markup**，想让它们变粗就自己加粗。
+代价是每行都要自己安排，好处是外观完全可控。
+
+![lovelace 渲染效果](../../assets/typst/lovelace.png)
+*同一段二分查找，由 `typst-demos/lovelace.typ` 编译得到*
+
+!!! tip "注释要转义"
+
+    注释在 lovelace 里没有专门语法，直接写就行。但在 Typst 的 markup 模式里
+    `//` 是保留的，所以要写成 `\/\/`。
+
+??? example "源码"
+
+    ```typst
+    #set page(width: 13cm, height: auto, margin: 6pt, fill: white)
+    #set text(font: ("Libertinus Serif", "Noto Sans SC"), size: 9pt)
+
+    #import "@preview/lovelace:0.3.1": pseudocode-list
+
+    // Lovelace is unopinionated: there is no keyword or comment construct at all.
+    // Every list item becomes one line, nesting becomes indentation, and keywords
+    // are just markup you style yourself. "//" must be escaped in markup mode.
+    #pseudocode-list[
+      + *Binary-Search*(A, target)
+      + \/\/ A is sorted in ascending order
+      + low ← 1, high ← A.length
+      + *while* low <= high
+        + mid ← floor((low + high) / 2)
+        + *if* A[mid] = target
+          + *return* mid
+        + *else if* A[mid] < target
+          + low ← mid + 1
+        + *else*
+          + high ← mid - 1
+        + *end*
+      + *end*
+      + *return* null
+    ]
+    ```
+
+### algorithmic · 最像论文
+
+模仿 LaTeX 的 `algorithmicx`。关键字、缩进、行号、竖参考线全都是自动的，
+还会自动加上 `Algorithm 1: Binary Search` 这样的标题——投论文要的就是这个效果。
+
+![algorithmic 渲染效果](../../assets/typst/algorithmic.png)
+*同一段二分查找，由 `typst-demos/algorithmic.typ` 编译得到*
+
+代价是**语法最啰嗦**：每个语句都是一个函数调用，条件、正文、分支要分别包在
+数组和代码块里，嵌套一深括号就数不清了。适合「一次写对、之后很少改」的场合。
+
+??? example "源码"
+
+    ```typst
+    #set page(width: 13cm, height: auto, margin: 6pt, fill: white)
+    #set text(font: ("Libertinus Serif", "Noto Sans SC"), size: 9pt)
+
+    #import "@preview/algorithmic:1.0.7"
+    #import algorithmic: algorithm-figure, style-algorithm
+
+    // The algorithmicx look: fixed `procedure`/`if ... then`/`while ... do`/`end`
+    // keywords, auto indentation, a vertical guide stroke and line numbers.
+    #show: style-algorithm
+
+    #algorithm-figure("Binary Search", {
+      import algorithmic: *
+      Procedure("Binary-Search", ("A", "target"), {
+        Comment[A is sorted in ascending order]
+        Assign[$"low"$][$1$]
+        Assign[$"high"$][$"A.length"$]
+        While($"low" <= "high"$, {
+          Assign($"mid"$, FnInline[floor][$("low" + "high") / 2$])
+          IfElseChain(
+            $"A"["mid"] = "target"$,
+            { Return[$"mid"$] },
+            $"A"["mid"] < "target"$,
+            { Assign[$"low"$][$"mid" + 1$] },
+            Assign[$"high"$][$"mid" - 1$],
+          )
+        })
+        Return[*null*]
+      })
+    })
+    ```
+
+### algo · 折中
+
+`algo` 把伪代码当成一个内容块来写：`\` 表示换行，`#i` / `#d` 表示进入和退出一层缩进，
+关键字（`while`、`if`、`return`……）由包自动加粗。
+
+![algo 渲染效果](../../assets/typst/algo.png)
+*同一段二分查找，由 `typst-demos/algo.typ` 编译得到*
+
+源码读起来最接近伪代码本身，但缩进得自己数——`#i` 和 `#d` 要配对，
+漏一个整段就歪了。
+
+??? example "源码"
+
+    ```typst
+    #set page(width: 13cm, height: auto, margin: 6pt, fill: white)
+    #set text(font: ("Libertinus Serif", "Noto Sans SC"), size: 9pt)
+
+    #import "@preview/algo:0.3.6": algo, i, d, comment
+
+    // Algo typesets a content block: "\" ends a line, #i/#d open and close an
+    // indent level, keywords are auto-bolded, #comment puts a note on the line.
+    #algo(
+      title: "Binary-Search",
+      parameters: ("A", "target"),
+      inset: 6pt,
+      row-gutter: 3pt,
+      column-gutter: 8pt,
+      indent-size: 12pt,
+      stroke: 0.5pt + luma(60%),
+    )[
+      #comment(inline: true)[A is sorted in ascending order]\
+      $"low" <- 1$\
+      $"high" <- "A.length"$\
+      while $"low" <= "high":#i\
+        $"mid" <- "floor"(("low" + "high") / 2)$\
+        if $"A"["mid"] = "target":#i\
+          return $"mid"$#d\
+        else if $"A"["mid"] < "target":#i\
+          $"low" <- "mid" + 1$#d\
+        else:#i\
+          $"high" <- "mid" - 1$#d#d\
+      return null
+    ]
+    ```
+
+### 同一段算法的可见差别
+
+把三张图放在一起看，差别集中在四处：
+
+| | lovelace | algorithmic | algo |
+| --- | --- | --- | --- |
+| 外框与题注 | 无 | `Algorithm 1: Binary Search` | 浅灰圆角盒子 + `Binary-Search(A, target):` |
+| 行号 / 缩进导引 | 只有行号 | 行号 + 竖参考线 | 无行号，靠缩进 |
+| 注释 | 纯文本，`//` 要转义 | `▷` 符号 | 灰色 `//`，可挂行尾 |
+| 数学 | 只能写 `<=`、`floor(...)` | 真正的 `≤`、分数 | 真正的 `≤`、分数 |
+| 结束符 | 手写 `end` | 自动生成 | 靠 `#d` 关闭 |
+
+### 怎么选
+
+- 写论文、要 `Algorithm 1` 标题和行号 → **algorithmic**
+- 想少写代码、只要一个能看的结果 → **algo**
+- 想完全控制外观（不要行号、自定义关键字样式） → **lovelace**
 
 ---
 
@@ -311,10 +467,21 @@ Typst 一直没有原生的图文绕排（文字沿着图片边缘流动），wr
 下面那个贴右边，正文先在第一张图右侧向下排，绕过之后回到整栏宽度，
 再绕到第二张图的左侧继续。
 
+!!! danger "wrap-it 对纯中文会静默失效"
+
+    源码里切分正文用的是 `body.text.split(" ")`——**只认空格**。
+    一整段中文如果只有寥寥几个空格，就等于只有几个「词」，
+    内部算分割点时直接返回 0 或 -1，函数悄悄落到「不环绕」的分支：
+    下面那张图不会环绕，而是孤零零掉到正文底下。不报错，只是效果没了。
+
+    我这次就踩了：第一版渲染出来卡片 B 挂在页面最下方。
+    解法是让段尾出现若干用空格分隔的拉丁词（`Typst 0.15`、`image`、`svg` 之类），
+    尾部词粒度够细，分割点才落得下来。中英混排的文档天然没这个问题。
+
 !!! note "文字不够长就看不到效果"
 
     如果正文比图形矮，环绕根本不会发生，图形下方的空白会把它和正文隔开。
-    所以演示里的文字是故意写长的——这段说明本身不影响效果，只是为了让绕排看得见。
+    所以演示里的文字是故意写长的——那段说明本身不影响效果，只是为了让绕排看得见。
 
 ??? example "源码"
 
@@ -326,22 +493,32 @@ Typst 一直没有原生的图文绕排（文字沿着图片边缘流动），wr
 
     // 被文字环绕的卡片完全由 Typst 绘制，不引用任何外部图片
     #let card(tag, tint) = box(
-      width: 3.3cm,
-      inset: 7pt,
-      radius: 6pt,
+      width: 4.2cm,
+      inset: (x: 8pt, y: 7pt),
+      radius: 5pt,
       fill: tint.lighten(88%),
       stroke: 0.7pt + tint.lighten(30%),
-      align(center, stack(
-        spacing: 6pt,
-        circle(radius: 14pt, fill: tint),
+      grid(
+        columns: (auto, 1fr),
+        column-gutter: 8pt,
+        align: horizon,
+        circle(radius: 11pt, fill: tint),
         text(size: 8pt, fill: tint.darken(25%))[#tag],
-      )),
+      ),
     )
 
+    // 一段连续的中文正文
+    #let passage = [
+      Typst 是一门年轻的排版语言，它把标记、代码与数学公式放进同一套简洁的语法之中。……
+      两张卡片都由 Typst 0.15 自己画出来，没有 image，没有 svg，也没有 png，
+      全部是 rect、circle 和 text 这些基础图形拼起来的。
+    ]
+
+    // 上卡片靠左、下卡片靠右，文字从两张卡片中间穿过
     #wrap-top-bottom(
       card([卡片 A], rgb("#2f6fb5")),
       card([卡片 B], rgb("#c2703a")),
-      [正文……],
+      passage,
       top-kwargs: (column-gutter: 0.9em),
       bottom-kwargs: (column-gutter: 0.9em),
     )
@@ -358,13 +535,21 @@ zebraw 就是来补这些的。
 三个开关都在这段里：
 
 ```typst
+#v(1.4em)                       // 给语言标签留出上边距，见下面的坑
+
 #zebraw(
   lang: true,                    // 右上角显示语言名
   numbering-separator: true,     // 行号和代码之间加一条竖线
   highlight-lines: (3, 4),       // 高亮指定行
-  code,
+  code,                          // 注意 body 是最后一个参数，位置传参即可
 )
 ```
+
+!!! warning "语言标签画在代码块上边缘之外"
+
+    源码里用 `v(-measure(lang-tab).height)` 把标签往上挪，所以它会跑到代码块的
+    边界以外。页面边距小的时候（比如 6pt）会被直接裁掉半个字。
+    在 `#zebraw()` 前面加一段 `#v(1.4em)` 就好。
 
 包里有中文文档（`README_zh.md`，20 KB），参数说明比英文版还全。
 
@@ -388,6 +573,9 @@ zebraw 就是来补这些的。
 
     print([fib(i) for i in range(10)])
     ```
+
+    // 语言标签绘制在代码块上边缘之上，留出这一段空白避免被页面裁掉
+    #v(1.4em)
 
     #zebraw(
       lang: true,
