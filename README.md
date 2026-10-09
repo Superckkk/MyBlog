@@ -130,15 +130,19 @@ pwsh -File scripts/render-typst-demos.ps1
 
 ## 换成你自己的信息
 
-需要改的地方都留了 `你的名字` / `your-name` / `example.com` 这类占位：
+域名、仓库、作者这些**已经填好了**（`turingckkk.com` / `Superckkk/MyBlog` / `ckkk`）。
+剩下这些还是通用占位，想改再动：
 
-| 文件 | 改什么 |
-| --- | --- |
-| `mkdocs.yml` | `site_name`、`site_url`、`site_author`、`copyright`、`repo_url`、`repo_name`、`edit_uri`、`extra.social` |
-| `docs/about.md` | 自我介绍和联系方式 |
-| `docs/assets/images/` | `logo.svg`、`favicon.svg`、`avatar.svg` 换成自己的 |
+| 文件 | 改什么 | 现在的值 |
+| --- | --- | --- |
+| `mkdocs.yml` | `site_name` | `我的技术博客` |
+| `mkdocs.yml` | `site_description` | `学习笔记与技术备忘` |
+| `docs/about.md` | 自我介绍、联系方式 | 学校专业 + GitHub 链接 |
+| `docs/assets/images/` | `logo.svg`、`favicon.svg`、`avatar.svg` | 靛蓝配色的占位图形 |
 
-改完 `repo_url` 之后，页面右上角的「编辑此页」才会指向正确的地址。
+`extra.social` 里的邮箱图标是注释掉的——不想公开邮箱就不用管它。
+
+改完 `site_name` 或 `repo_url` 记得本地 `mkdocs build --strict` 跑一遍再推。
 
 ## 字体
 
@@ -353,11 +357,72 @@ extra_javascript:
 
 ## 部署
 
-`site/` 是纯静态文件，丢哪儿都行。
+站点跑在 **GitHub Pages** 上，域名 `turingckkk.com`，仓库
+[Superckkk/MyBlog](https://github.com/Superckkk/MyBlog)。
 
-- **GitHub Pages**：`mkdocs gh-deploy`，或者用 Actions 跑 `mkdocs build --strict`
+### 它是怎么工作的
+
+推送到 `main` 之后，`.github/workflows/deploy.yml` 会自动：
+
+1. 全量检出（`fetch-depth: 0`，否则 `git-revision-date-localized` 拿不到提交历史，页脚日期会全变成构建时间）
+2. 装 `requirements.txt` 里的依赖
+3. `mkdocs build --strict`（有警告就直接失败，不会把坏页面发上去）
+4. 把 `site/` 作为 artifact 上传，交给 `actions/deploy-pages` 发布
+
+所以日常只需要 `git push`，不用在本地构建。
+
+### 首次部署要做的两件事
+
+仓库 Settings → Pages：
+
+| 项目 | 值 |
+| --- | --- |
+| Build and deployment → Source | **GitHub Actions** |
+| Custom domain | `turingckkk.com` |
+
+`docs/CNAME` 里已经写了域名，Custom domain 一般会自动带出来，但确认一下更稳妥。
+等 DNS 生效、证书签发完成（通常几分钟到几小时），再勾上 **Enforce HTTPS**。
+
+### DNS
+
+`turingckkk.com` 的解析在阿里云（万网）。GitHub Pages 需要：
+
+| 主机记录 | 类型 | 记录值 |
+| --- | --- | --- |
+| `@` | A | `185.199.108.153` |
+| `@` | A | `185.199.109.153` |
+| `@` | A | `185.199.110.153` |
+| `@` | A | `185.199.111.153` |
+| `www` | CNAME | `turingckkk.com` |
+
+这四条 A 记录已经配好了。**但 `www` 目前 CNAME 指向 `superckkk.github.io`**，
+那是另一个站点（Hippo 英语测评），不改的话 `www.turingckkk.com` 会跑到那边去。
+把 `www` 的 CNAME 改成 `turingckkk.com` 即可。
+
+（可选）想要 IPv6 就再加四条 AAAA：
+`2606:50c0:8000::153`、`2606:50c0:8001::153`、`2606:50c0:8002::153`、`2606:50c0:8003::153`。
+
+### 手动部署（备选）
+
+不想走 Actions 的话，本地构建后直接推 `gh-pages` 分支：
+
+```bash
+.venv/bin/python -m mkdocs gh-deploy --force
+```
+
+对应地要把 Settings → Pages → Source 改成「Deploy from a branch」，分支选 `gh-pages`。
+两种方式不要同时开。
+
+### 先在本地验一遍
+
+```bash
+.venv/bin/python -m mkdocs build --strict   # CI 里跑的就是这条
+.venv/bin/python -m mkdocs serve            # 打开 http://127.0.0.1:8000/
+```
+
+### 其它平台
+
+`site/` 就是一堆静态文件，也能直接丢给别的托管：
+
 - **Cloudflare Pages / Vercel**：构建命令 `mkdocs build`，输出目录 `site`
-- **自己的服务器**：Nginx 指向 `site/` 就行
-
-记得把 `mkdocs.yml` 里的 `site_url` 改成真实域名，
-它会影响 sitemap 和页面里的绝对链接。
+- **自己的服务器**：Nginx 指向 `site/`

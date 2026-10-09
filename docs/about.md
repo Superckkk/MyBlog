@@ -27,8 +27,8 @@
 
 ## 联系我
 
-- GitHub：[:fontawesome-brands-github: your-name](https://github.com/your-name)
-- 邮箱：[:fontawesome-solid-envelope: you@example.com](mailto:you@example.com)
+- GitHub：[:fontawesome-brands-github: Superckkk](https://github.com/Superckkk)
+- 站点仓库：[Superckkk/MyBlog](https://github.com/Superckkk/MyBlog)
 
 ## 版权
 

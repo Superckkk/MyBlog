@@ -230,8 +230,9 @@ extra_javascript:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/your-name
+      link: https://github.com/Superckkk
       name: GitHub
-    - icon: fontawesome/solid/envelope
-      link: mailto:you@example.com
-      name: 邮箱
+    # 想放邮箱就把下面两行取消注释
+    # - icon: fontawesome/solid/envelope
+    #   link: mailto:you@example.com
+    #   name: 邮箱
